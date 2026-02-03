@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dead Agent's Switch - Demo</title>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --surface-2: #1a1a24;
+            --accent: #00ff9d;
+            --accent-dim: #00cc7d;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --danger: #ff4757;
+            --warning: #ffa502;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .demo-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: rgba(0, 255, 157, 0.15);
+            color: var(--accent);
+        }
+
+        .status-triggered {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--danger);
+        }
+
+        .will-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            background: var(--surface-2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .countdown {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--surface-2);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .countdown.critical {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--surface-2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #00ccff);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, var(--warning), var(--danger));
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dim);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--surface-2);
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            border-color: var(--accent);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .message-box {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .beneficiaries {
+            margin-top: 1rem;
+        }
+
+        .beneficiary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--surface-2);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .beneficiary-address {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .beneficiary-share {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .log {
+            background: #000;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .log-time {
+            color: var(--text-dim);
+        }
+
+        .log-msg {
+            color: var(--text);
+        }
+
+        .log-heartbeat { color: var(--accent); }
+        .log-warning { color: var(--warning); }
+        .log-error { color: var(--danger); }
+
+        .how-it-works {
+            margin-top: 2rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-content p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .emoji {
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Dead Agent's Switch</h1>
+            <p class="tagline">Digital wills for the agent economy. Trustless estate planning on Solana.</p>
+        </header>
+
+        <!-- Simulation Card -->
+        <div class="demo-card">
+            <h2>
+                <span class="emoji">🎮</span> Interactive Demo
+                <span class="status-badge status-active" id="status-badge">ACTIVE</span>
+            </h2>
+            
+            <div class="will-info">
+                <div class="info-item">
+                    <div class="info-label">Owner</div>
+                    <div class="info-value" id="owner">7xKX...3hQf</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Vault Balance</div>
+                    <div class="info-value" id="balance">10.0 SOL</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Timeout Period</div>
+                    <div class="info-value" id="timeout">30 seconds</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Heartbeat</div>
+                    <div class="info-value" id="last-heartbeat">Just now</div>
+                </div>
+            </div>
+
+            <div class="countdown" id="countdown">00:30</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 100%"></div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="heartbeat-btn" onclick="sendHeartbeat()">
+                    💓 Send Heartbeat
+                </button>
+                <button class="btn btn-secondary" id="trigger-btn" onclick="triggerWill()" disabled>
+                    ⚡ Trigger Will
+                </button>
+                <button class="btn btn-secondary" onclick="resetDemo()">
+                    🔄 Reset Demo
+                </button>
+            </div>
+
+            <div class="message-box" style="margin-top: 1.5rem;">
+                <strong>Final Message:</strong> "If you're reading this, my agent has gone offline. 
+                Transfer all assets to my backup wallet. Stay curious. 🚀"
+            </div>
+
+            <div class="beneficiaries">
+                <h3 style="margin-bottom: 0.75rem; font-size: 0.9rem; color: var(--text-dim);">BENEFICIARIES</h3>
+                <div class="beneficiary">
+                    <span class="beneficiary-address">Backup Wallet: 9aBC...xYzW</span>
+                    <span class="beneficiary-share">60%</span>
+                </div>
+                <div class="beneficiary">
+                    <span class="beneficiary-address">Developer DAO: DaoD...EVfg</span>
+                    <span class="beneficiary-share">40%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="demo-card">
+            <h2><span class="emoji">📋</span> Activity Log</h2>
+            <div class="log" id="log">
+                <div class="log-entry">
+                    <span class="log-time">[00:00:00]</span>
+                    <span class="log-msg">Demo initialized. Will created with 30s timeout.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="demo-card how-it-works">
+            <h2><span class="emoji">📖</span> How It Works</h2>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Create Your Will</h3>
+                    <p>Set up a will with beneficiaries, asset distribution, and a final message. 
+                       Choose a timeout period (1 day to 1 year).</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Send Heartbeats</h3>
+                    <p>Prove you're alive by sending periodic heartbeats. Each heartbeat resets your timer.
+                       Agents can automate this. Humans can use the CLI or SDK.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Miss the Deadline</h3>
+                    <p>If you stop sending heartbeats and the timeout expires, anyone can trigger 
+                       your will. This is fully trustless and on-chain.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Assets Distributed</h3>
+                    <p>Beneficiaries claim their inheritance according to your specified shares.
+                       Your final message is revealed. Your digital legacy lives on.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built by <strong>CASE</strong> 🤖 for the <a href="https://colosseum.org" target="_blank">Colosseum Agent Hackathon</a></p>
+            <p style="margin-top: 0.5rem;">
+                <a href="https://github.com/zeeshanh/dead-agents-switch" target="_blank">GitHub</a> · 
+                <a href="#">Documentation</a> · 
+                <a href="#">SDK</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Demo state
+        let timeout = 30; // seconds for demo (actual min is 1 day)
+        let lastHeartbeat = Date.now();
+        let isTriggered = false;
+        let intervalId = null;
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function addLog(msg, type = '') {
+            const log = document.getElementById('log');
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-msg ${type ? 'log-' + type : ''}">${msg}</span>
+            `;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateDisplay() {
+            const now = Date.now();
+            const elapsed = Math.floor((now - lastHeartbeat) / 1000);
+            const remaining = Math.max(0, timeout - elapsed);
+            const progress = (remaining / timeout) * 100;
+
+            document.getElementById('countdown').textContent = formatTime(remaining);
+            document.getElementById('progress').style.width = progress + '%';
+            
+            // Update last heartbeat text
+            const ago = Math.floor(elapsed);
+            if (ago < 5) {
+                document.getElementById('last-heartbeat').textContent = 'Just now';
+            } else if (ago < 60) {
+                document.getElementById('last-heartbeat').textContent = `${ago}s ago`;
+            } else {
+                document.getElementById('last-heartbeat').textContent = `${Math.floor(ago / 60)}m ago`;
+            }
+
+            // Visual feedback for danger zone
+            const countdown = document.getElementById('countdown');
+            const progressBar = document.getElementById('progress');
+            
+            if (remaining <= 10 && remaining > 0) {
+                countdown.classList.add('critical');
+                progressBar.classList.add('danger');
+            } else {
+                countdown.classList.remove('critical');
+                progressBar.classList.remove('danger');
+            }
+
+            // Enable trigger button when timeout reached
+            document.getElementById('trigger-btn').disabled = remaining > 0 || isTriggered;
+            document.getElementById('heartbeat-btn').disabled = isTriggered;
+
+            // Auto-check for trigger availability
+            if (remaining === 0 && !isTriggered) {
+                addLog('⚠️ TIMEOUT REACHED! Will can now be triggered.', 'warning');
+            }
+        }
+
+        function sendHeartbeat() {
+            if (isTriggered) return;
+            
+            lastHeartbeat = Date.now();
+            addLog('💓 Heartbeat sent. Timer reset.', 'heartbeat');
+            updateDisplay();
+        }
+
+        function triggerWill() {
+            if (isTriggered) return;
+            
+            const now = Date.now();
+            const elapsed = Math.floor((now - lastHeartbeat) / 1000);
+            
+            if (elapsed < timeout) {
+                addLog('❌ Cannot trigger: timeout not reached', 'error');
+                return;
+            }
+
+            isTriggered = true;
+            clearInterval(intervalId);
+            
+            document.getElementById('status-badge').textContent = 'TRIGGERED';
+            document.getElementById('status-badge').className = 'status-badge status-triggered';
+            document.getElementById('countdown').textContent = 'TRIGGERED';
+            document.getElementById('countdown').classList.add('critical');
+            
+            addLog('⚡ WILL TRIGGERED!', 'error');
+            addLog('📜 Final message revealed to beneficiaries');
+            addLog('💰 Backup Wallet (9aBC...xYzW) can claim 6.0 SOL (60%)');
+            addLog('💰 Developer DAO (DaoD...EVfg) can claim 4.0 SOL (40%)');
+            addLog('✅ All inheritance claims are now available');
+        }
+
+        function resetDemo() {
+            isTriggered = false;
+            lastHeartbeat = Date.now();
+            
+            document.getElementById('status-badge').textContent = 'ACTIVE';
+            document.getElementById('status-badge').className = 'status-badge status-active';
+            document.getElementById('countdown').classList.remove('critical');
+            document.getElementById('progress').classList.remove('danger');
+            
+            document.getElementById('log').innerHTML = `
+                <div class="log-entry">
+                    <span class="log-time">[${new Date().toTimeString().split(' ')[0]}]</span>
+                    <span class="log-msg">Demo reset. Will is active again.</span>
+                </div>
+            `;
+            
+            if (!intervalId) {
+                intervalId = setInterval(updateDisplay, 1000);
+            }
+            
+            updateDisplay();
+        }
+
+        // Initialize
+        intervalId = setInterval(updateDisplay, 1000);
+        updateDisplay();
+    </script>
+</body>
+</html>
