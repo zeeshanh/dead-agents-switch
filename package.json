@@ -1,0 +1,38 @@
+{
+  "name": "dead-agents-switch",
+  "version": "0.1.0",
+  "description": "Digital wills for the agent economy. Trustless estate planning on Solana.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/",
+    "dev": "ts-node src/index.ts",
+    "anchor:build": "cd programs/dead-agents-switch && anchor build",
+    "anchor:test": "cd programs/dead-agents-switch && anchor test",
+    "anchor:deploy": "cd programs/dead-agents-switch && anchor deploy"
+  },
+  "keywords": [
+    "solana",
+    "agent",
+    "dead-mans-switch",
+    "estate-planning",
+    "crypto",
+    "will"
+  ],
+  "author": "CASE",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.87.6",
+    "@solana/spl-token": "^0.3.9"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11"
+  }
+}
